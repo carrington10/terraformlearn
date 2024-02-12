@@ -10,11 +10,11 @@ terraform {
 }
 
 # create a vpc 
-
 resource "aws_vpc" "main" {
     cidr_block = "10.0.0.0/16"
     tags = local.common_tags
 }
+
 #creates public subnets
 resource "aws_subnet" "public_subnets"{
     count = length(var.public_subnet_cidrs)
@@ -33,6 +33,15 @@ resource "aws_subnet" "private_subnets" {
     availability_zone = element(var.azs,count.index)
     tags = {
         Name = "private subnet ${count.index + 1}"
+    }
+}
+
+# create interanl gateway
+resource "aws_internet_gateway" "gw"{
+    vpc_id = aws_vpc.main.id
+
+    tags = {
+        Name = "internal gateway"
     }
 }
 
